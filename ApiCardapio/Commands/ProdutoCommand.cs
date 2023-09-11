@@ -22,6 +22,7 @@ namespace ApiCardapio
         public double ValorProduto { get; set; }
         public double ValorPromocional { get; set; }
         public bool Ativo  { get; set; }
+        public int ProdutoEstabelecimentoId { get; set; }
 
     }
 }

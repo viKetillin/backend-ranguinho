@@ -113,10 +113,8 @@ namespace ApiCardapio
 
             app.UseCors(options =>
             {
-                options.WithOrigins("http://localhost:3000").AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
             });
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 

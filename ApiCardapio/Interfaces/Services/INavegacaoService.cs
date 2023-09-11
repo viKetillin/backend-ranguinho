@@ -1,5 +1,4 @@
-﻿using ApiCardapio.Models;
-using ApiCardapio.Querys;
+﻿using ApiCardapio.Querys;
 using System.Threading.Tasks;
 
 namespace ApiCardapio.Interfaces.Services
@@ -8,7 +7,7 @@ namespace ApiCardapio.Interfaces.Services
     {
         #region [GET]
         Task<ResultadoExecucaoListaQuery<EstabelecimentoQuery>> GetEstabelecimentos();
-        Task<ResultadoExecucaoQuery<EstabelecimentoModel>> GetEstabelecimento(string link);        
+        Task<ResultadoExecucaoQuery<ListaEstabelecimentosQuery>> GetEstabelecimento(string link);        
         Task<ResultadoExecucaoListaQuery<CardapioQuery>> GetCardapio(int idEstabelecimento);
         Task<ResultadoExecucaoListaQuery<DiaHorarioFuncionamentoQuery>> GetHorarioFuncionamento(int idEstabelecimento);
         #endregion [GET]

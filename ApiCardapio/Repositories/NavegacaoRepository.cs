@@ -51,6 +51,7 @@ namespace ApiCardapio.Repositories
             sql.AppendLine("       ,CIDADE ");
             sql.AppendLine("       ,LINKCARDAPIO ");
             sql.AppendLine("       ,LOGO ");
+            sql.AppendLine("       ,IMAGEMCAPA ");
             sql.AppendLine("    FROM ESTABELECIMENTO ");
             sql.AppendLine("  WHERE LINKCARDAPIO = @LINK ");
 

@@ -4,8 +4,6 @@ using ApiCardapio.Interfaces.Repositories;
 using ApiCardapio.Models;
 using ApiCardapio.Querys;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,13 +12,11 @@ namespace ApiCardapio.Repositories
 {
     public class CardapioRepository : AbstractRepository, ICardapioRepository
     {
-        private readonly Contexto _context;
-        private readonly IDbContext _dbContext;
+        private readonly Contexto _context;        
 
         public CardapioRepository(IDbContext dbContext, Contexto context) : base(dbContext)
         {
-            _context = context;
-            _dbContext = dbContext;
+            _context = context;            
         }
 
         #region [GET]
@@ -36,6 +32,7 @@ namespace ApiCardapio.Repositories
             sql.AppendLine("       ,PE.VALOR ");
             sql.AppendLine("       ,PE.VALORPROMOCIONAL ");
             sql.AppendLine("       ,CP.EXIBIRCARDAPIO ");
+            sql.AppendLine("       ,PE.ID AS PRODUTOESTABELECIMENTOID ");
             sql.AppendLine("   FROM PRODUTOESTABELECIMENTO PE ");
             sql.AppendLine("     INNER JOIN PRODUTO P ON (P.ID = PE.PRODUTOID) ");
             sql.AppendLine("     INNER JOIN CATEGORIAPRODUTO CP ON (CP.ID = P.CATEGORIAPRODUTOID) ");
@@ -134,7 +131,7 @@ namespace ApiCardapio.Repositories
         #endregion [POST]
 
         #region [PUT]
-        public async Task<ResultadoExecucaoQuery<int>> PutProduto([FromForm] ProdutoCommand produtoCommand)
+        public async Task<ResultadoExecucaoQuery<int>> PutProduto([FromBody] ProdutoCommand produtoCommand)
         {           
             ProdutoModel produto = new()
             {
@@ -146,12 +143,11 @@ namespace ApiCardapio.Repositories
                 CategoriaProdutoId = produtoCommand.CategoriaId
             };
 
-            _context.Produtos.Update(produto);
-            _context.SaveChanges();
+            _context.Produtos.Update(produto);            
 
             var produtoEstabelecimento = new ProdutoEstabelecimentoModel
             {
-                Id = produto.Id,
+                Id = produtoCommand.ProdutoEstabelecimentoId,
                 EstabelecimentoId = produtoCommand.EstabelecimentoId,
                 Valor = produtoCommand.ValorProduto,
                 ProdutoId = produtoCommand.Id,

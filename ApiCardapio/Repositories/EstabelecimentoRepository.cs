@@ -59,7 +59,7 @@ namespace ApiCardapio.Repositories
             sql.AppendLine("       ,E.FACEBOOK ");
             sql.AppendLine("       ,E.LOGO ");
             sql.AppendLine("       ,E.NOME ");
-            sql.AppendLine("       ,IMAGEMCAPA ");
+            sql.AppendLine("       ,E.IMAGEMCAPA ");
             sql.AppendLine("    FROM ESTABELECIMENTO E");
             if (usuario.Perfil == "Proprietário")
             {
@@ -116,8 +116,7 @@ namespace ApiCardapio.Repositories
                 ImagemCapa = estabelecimentoCommand.ImagemCapa
             };
 
-            _context.Estabelecimentos.Add(estabelecimento);
-            _context.SaveChanges();
+            _context.Estabelecimentos.Add(estabelecimento);            
 
             if (usuario.Perfil == "Proprietário")
             {
@@ -129,16 +128,18 @@ namespace ApiCardapio.Repositories
                     UsuarioId = usuarioId.Id
                 };
 
-                _context.UsuarioEstabelecimento.Add(usuarioEstabelecimento);
-                _context.SaveChanges();
+                _context.UsuarioEstabelecimento.Add(usuarioEstabelecimento);                
             }
 
             foreach (var horario in estabelecimentoCommand.HorarioFuncionamento)
             {
+                DayOfWeek diaInicio = ObterDiaDaSemana(horario.DiaInicio);
+                DayOfWeek diaFim = ObterDiaDaSemana(horario.DiaFim);
+
                 DiaHorasFuncionamentoModel horarioFuncionamento = new()
                 {
-                    DiaFim = ObterDiaDaSemana(horario.DiaFim),
-                    DiaInicio = ObterDiaDaSemana(horario.DiaInicio),
+                    DiaInicio = diaInicio,
+                    DiaFim = diaFim,                    
                     HoraInicio = DateTime.ParseExact(horario.HoraInicio, "HH:mm", CultureInfo.InvariantCulture),
                     HoraFim = DateTime.ParseExact(horario.HoraFim, "HH:mm", CultureInfo.InvariantCulture),
                     EstabelecimentoId = estabelecimento.Id
@@ -181,11 +182,14 @@ namespace ApiCardapio.Repositories
 
             foreach (var horario in estabelecimentoCommand.HorarioFuncionamento)
             {
+                DayOfWeek diaInicio = ObterDiaDaSemana(horario.DiaInicio);
+                DayOfWeek diaFim = ObterDiaDaSemana(horario.DiaFim);
+
                 DiaHorasFuncionamentoModel horarioFuncionamento = new()
                 {
-                    Id = horario.Id,
-                    DiaFim = ObterDiaDaSemana(horario.DiaFim),
-                    DiaInicio = ObterDiaDaSemana(horario.DiaInicio),
+                    Id = horario.Id,                    
+                    DiaInicio = diaInicio,
+                    DiaFim = diaFim,
                     HoraInicio = DateTime.ParseExact(horario.HoraInicio, "HH:mm", CultureInfo.InvariantCulture),
                     HoraFim = DateTime.ParseExact(horario.HoraFim, "HH:mm", CultureInfo.InvariantCulture),
                     EstabelecimentoId = estabelecimentoCommand.Id
@@ -227,7 +231,8 @@ namespace ApiCardapio.Repositories
                 string nomeDia = cultura.DateTimeFormat.GetDayName(dia);
                 if (string.Equals(nomeDia, diaSemana, StringComparison.OrdinalIgnoreCase))
                 {
-                    return dia;
+                    //Compatibilizando com o SQL
+                    return (DayOfWeek)(((int)dia + 6) % 7);
                 }
             }
 

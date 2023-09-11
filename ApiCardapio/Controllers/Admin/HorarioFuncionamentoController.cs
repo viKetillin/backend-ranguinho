@@ -13,12 +13,10 @@ namespace ApiCardapio.Controllers
     [ApiController]
     public class HorarioFuncionamentoController : MainController
     {
-        private readonly Contexto _context;
         private readonly IHorarioFuncionamentoService _horarioFuncionamentoService;
 
-        public HorarioFuncionamentoController(Contexto context, IHorarioFuncionamentoService horarioFuncionamentoService)
+        public HorarioFuncionamentoController(IHorarioFuncionamentoService horarioFuncionamentoService)
         {
-            _context = context;
             _horarioFuncionamentoService = horarioFuncionamentoService;
         }
 

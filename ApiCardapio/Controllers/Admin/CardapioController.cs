@@ -47,7 +47,7 @@ namespace ApiCardapio.Controllers.Admin
         #region [PUT]
         [Authorize(Roles = "Admin, Proprietário, Franqueado")]
         [HttpPut("produto")]
-        public async Task<ActionResult<ResultadoExecucaoQuery<int>>> PutProduto([FromForm] ProdutoCommand produtoCommand)
+        public async Task<ActionResult<ResultadoExecucaoQuery<int>>> PutProduto([FromBody] ProdutoCommand produtoCommand)
         {
             return Ok(await _cardapioService.PutProduto(produtoCommand));
         }

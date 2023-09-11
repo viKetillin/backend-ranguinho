@@ -1,5 +1,4 @@
 ﻿using ApiCardapio.Commands;
-using ApiCardapio.Data;
 using ApiCardapio.Interfaces.Services;
 using ApiCardapio.Models;
 using ApiCardapio.Querys;
@@ -15,12 +14,10 @@ namespace ApiCardapio.Controllers
     public class UsuarioController : MainController
     {
         private readonly IUsuarioService _usuarioService;
-        private readonly Contexto _context;
 
-        public UsuarioController(IUsuarioService usuarioService, Contexto context)
+        public UsuarioController(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
-            _context = context;
         }
 
         [Authorize(Roles = "Admin, Proprietário")]

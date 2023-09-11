@@ -10,5 +10,6 @@
         public bool? Ativo { get; set; }
         public double Valor { get; set; }
         public double? ValorPromocional { get; set; }
+        public int? ProdutoEstabelecimentoId { get; set; }
     }
 }

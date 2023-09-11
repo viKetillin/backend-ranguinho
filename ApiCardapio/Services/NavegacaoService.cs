@@ -14,7 +14,6 @@ namespace ApiCardapio.Services
     public class NavegacaoService : INavegacaoService
     {
         private readonly Contexto _context;
-        private readonly INavegacaoRepository _navegacaoRepository;
         private readonly ICardapioRepository _cardapioRepository;
         private readonly ICategoriaProdutoRepository _categoriaProdutoRepository;
         private readonly IAdicionalRepository _adicionalRepository;
@@ -22,8 +21,7 @@ namespace ApiCardapio.Services
         private readonly ICategoriaEstabelecimentoRepository _categoriaEstabelecimentoRepository;
         private readonly IEstabelecimentoRepository _estabelecimentoRepository;
 
-        public NavegacaoService(INavegacaoRepository navegacaoRepository,
-                                ICardapioRepository cardapioRepository,
+        public NavegacaoService(ICardapioRepository cardapioRepository,
                                 ICategoriaProdutoRepository categoriaProdutoRepository,
                                 IAdicionalRepository adicionalRepository,
                                 IHorarioFuncionamentoRepository horarioFuncionamentoRepository,
@@ -31,7 +29,6 @@ namespace ApiCardapio.Services
                                 IEstabelecimentoRepository estabelecimentoRepository,
                                 Contexto context)
         {
-            _navegacaoRepository = navegacaoRepository;
             _cardapioRepository = cardapioRepository;
             _categoriaProdutoRepository = categoriaProdutoRepository;
             _adicionalRepository = adicionalRepository;
@@ -43,7 +40,7 @@ namespace ApiCardapio.Services
 
         #region [GET]
         public async Task<ResultadoExecucaoListaQuery<EstabelecimentoQuery>> GetEstabelecimentos()
-        {          
+        {
             List<EstabelecimentoQuery> estabelecimento = new();
             List<ListaEstabelecimentosQuery> lstEstabelecimentos = new();
 
@@ -54,26 +51,10 @@ namespace ApiCardapio.Services
                 List<EstabelecimentoModel> estabelecimentos = _estabelecimentoRepository.GetEstabelecimentosPorCategoria(categoriaRecuperada.Id).Result.Data;
 
                 foreach (var estabelecimentoRecuperado in estabelecimentos)
-                {
-                    bool statusEstabelecimento = false;
-                    List<DiaHorasFuncionamentoModel> horarioFuncionamento = _horarioFuncionamentoRepository.GetHorarioFuncionamentoPorEstabelecimento(estabelecimentoRecuperado.Id).Result.Data;
+                {                    
+                    List<DiaHorasFuncionamentoModel> horarioFuncionamento = _horarioFuncionamentoRepository.GetHorarioFuncionamentoPorEstabelecimento(estabelecimentoRecuperado.LinkCardapio).Result.Data;
 
-                    DayOfWeek diaSemanaAtual = DateTime.Now.DayOfWeek;
-                    int horaAtual = DateTime.Now.Hour;
-
-                    foreach (var horarioRecuperado in horarioFuncionamento)
-                    {
-                        int horaInicioSalva = 0;
-                        int horaFimSalva = 0;
-                        if (horarioRecuperado.HoraInicio.HasValue && horarioRecuperado.HoraInicio.HasValue)
-                        {
-                            horaInicioSalva = horarioRecuperado.HoraInicio.Value.Hour;
-                            horaFimSalva = horarioRecuperado.HoraFim.Value.Hour;
-                        }
-
-                        if (diaSemanaAtual >= horarioRecuperado.DiaInicio && diaSemanaAtual <= horarioRecuperado.DiaFim && horaAtual >= horaInicioSalva && horaAtual <= horaFimSalva)
-                            statusEstabelecimento = true;
-                    }
+                    bool statusEstabelecimento = VerificarStatusEstabelecimento(horarioFuncionamento);
 
                     ListaEstabelecimentosQuery objListaEstabelecimentos = new()
                     {
@@ -99,9 +80,28 @@ namespace ApiCardapio.Services
             return await Task.FromResult(new ResultadoExecucaoListaQuery<EstabelecimentoQuery>(estabelecimento));
         }
 
-        public async Task<ResultadoExecucaoQuery<EstabelecimentoModel>> GetEstabelecimento(string link)
-        {
-            return await _navegacaoRepository.GetEstabelecimento(link);
+        public async Task<ResultadoExecucaoQuery<ListaEstabelecimentosQuery>> GetEstabelecimento(string link)
+        {                        
+            List<DiaHorasFuncionamentoModel> horarioFuncionamento = _horarioFuncionamentoRepository.GetHorarioFuncionamentoPorEstabelecimento(link).Result.Data;
+            EstabelecimentoModel estabelecimento = _estabelecimentoRepository.GetEstabelecimento(link).Result.Data;           
+            bool statusEstabelecimento = VerificarStatusEstabelecimento(horarioFuncionamento);
+
+            ListaEstabelecimentosQuery objEstabelecimento = new()
+            {
+                Id = estabelecimento.Id,
+                Logo = estabelecimento.Logo,
+                Nome = estabelecimento.Nome,
+                LinkCardapio = estabelecimento.LinkCardapio,
+                Cidade = estabelecimento.Cidade,
+                Endereco = estabelecimento.Endereco,
+                ImagemCapa = estabelecimento.ImagemCapa,
+                Telefone = estabelecimento.Telefone,
+                UF = estabelecimento.UF,
+                StatusEstabelecimento = statusEstabelecimento,
+                HorarioFuncionamento = _horarioFuncionamentoRepository.GetHorarioFuncionamento(estabelecimento.Id).Result.Data 
+            };
+
+            return await Task.FromResult(new ResultadoExecucaoQuery<ListaEstabelecimentosQuery>(objEstabelecimento));
         }
 
         public async Task<ResultadoExecucaoListaQuery<CardapioQuery>> GetCardapio(int idEstabelecimento)
@@ -158,6 +158,30 @@ namespace ApiCardapio.Services
 
         #region [Privados]
         private bool VerificarSeExisteEstabelecimento(int idEstabelecimento) => _context.Estabelecimentos.Any(e => e.Id == idEstabelecimento);
+        private bool VerificarStatusEstabelecimento(List<DiaHorasFuncionamentoModel> horariosFuncionamento)
+        {
+            TimeSpan saoPauloOffset = TimeSpan.FromHours(-3);
+            DateTimeOffset currentTimeInSaoPaulo = DateTimeOffset.UtcNow.ToOffset(saoPauloOffset);            
+
+            DayOfWeek diaSemanaAtual = currentTimeInSaoPaulo.DayOfWeek;
+            int horaAtual = currentTimeInSaoPaulo.Hour;
+
+            bool statusEstabelecimento = false;
+            foreach (var horarioRecuperado in horariosFuncionamento)
+            {
+                int horaInicioSalva = 0;
+                int horaFimSalva = 0;
+                if (horarioRecuperado.HoraInicio.HasValue && horarioRecuperado.HoraFim.HasValue)
+                {
+                    horaInicioSalva = horarioRecuperado.HoraInicio.Value.Hour;
+                    horaFimSalva = horarioRecuperado.HoraFim.Value.Hour;
+                }
+
+                if (diaSemanaAtual >= horarioRecuperado.DiaInicio && diaSemanaAtual <= horarioRecuperado.DiaFim && horaAtual >= horaInicioSalva && horaAtual <= horaFimSalva)
+                    statusEstabelecimento = true;
+            }
+            return statusEstabelecimento;
+        }
         #endregion [Privados]
     }
 }

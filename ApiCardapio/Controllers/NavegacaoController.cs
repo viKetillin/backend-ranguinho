@@ -1,5 +1,4 @@
 ﻿using ApiCardapio.Interfaces.Services;
-using ApiCardapio.Models;
 using ApiCardapio.Querys;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ namespace ApiCardapio.Controllers
         }   
         
         [HttpGet("estabelecimento{link}")]
-        public async Task<ActionResult<ResultadoExecucaoQuery<EstabelecimentoModel>>> GetEstabelecimento(string link)
+        public async Task<ActionResult<ResultadoExecucaoQuery<ListaEstabelecimentosQuery>>> GetEstabelecimento(string link)
         {
             return Ok(await _navegacaoService.GetEstabelecimento(link));
         }        

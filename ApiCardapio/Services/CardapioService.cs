@@ -117,7 +117,7 @@ namespace ApiCardapio.Services
         #endregion [POST]
 
         #region [PUT]
-        public async Task<ResultadoExecucaoQuery<int>> PutProduto([FromForm] ProdutoCommand produtoCommand)
+        public async Task<ResultadoExecucaoQuery<int>> PutProduto([FromBody] ProdutoCommand produtoCommand)
         {
             return await _cardapioRepository.PutProduto(produtoCommand);
         }

@@ -68,6 +68,7 @@ namespace ApiCardapio.Repositories
         {
             CategoriaProdutoModel categoriaProduto = new()
             {
+                EstabelecimentoId = categoria.EstabelecimentoId,
                 CategoryName = categoria.CategoryName,
                 ExibirCardapio = categoria.ExibirCardapio,
                 ImagemFiltro = categoria.LinkImagemFiltro,

@@ -17,19 +17,20 @@ namespace ApiCardapio.Repositories
             _context = context;
         }
 
-        public async Task<ResultadoExecucaoListaQuery<DiaHorasFuncionamentoModel>> GetHorarioFuncionamentoPorEstabelecimento(int estabelecimentoId)
+        public async Task<ResultadoExecucaoListaQuery<DiaHorasFuncionamentoModel>> GetHorarioFuncionamentoPorEstabelecimento(string linkCardapio)
         {
             StringBuilder sql = new();
             sql.AppendLine(" SET LANGUAGE 'Brazilian' ");
-            sql.AppendLine(" SELECT ID ");
-            sql.AppendLine("       ,DIAINICIO ");
-            sql.AppendLine("       ,DIAFIM ");
-            sql.AppendLine("       ,HORAINICIO ");
-            sql.AppendLine(" 	   ,HORAFIM ");
-            sql.AppendLine("    FROM DIAHORASFUNCIONAMENTO ");
-            sql.AppendLine("  WHERE ESTABELECIMENTOID = @ESTABELECIMENTOID ");
+            sql.AppendLine(" SELECT DHF.ID ");
+            sql.AppendLine("       ,DHF.DIAINICIO ");
+            sql.AppendLine("       ,DHF.DIAFIM ");
+            sql.AppendLine("       ,DHF.HORAINICIO ");
+            sql.AppendLine(" 	   ,DHF.HORAFIM ");
+            sql.AppendLine("    FROM DIAHORASFUNCIONAMENTO DHF");
+            sql.AppendLine("    INNER JOIN ESTABELECIMENTO E ON E.ID = DHF.ESTABELECIMENTOID ");
+            sql.AppendLine("  WHERE LINKCARDAPIO = @LINKCARDAPIO ");
 
-            var resultado = ExecuteQuery<DiaHorasFuncionamentoModel>(sql.ToString(), new { ESTABELECIMENTOID = estabelecimentoId }).ToList();
+            var resultado = ExecuteQuery<DiaHorasFuncionamentoModel>(sql.ToString(), new { LINKCARDAPIO = linkCardapio }).ToList();
 
             return await Task.FromResult(new ResultadoExecucaoListaQuery<DiaHorasFuncionamentoModel>(resultado));
 
