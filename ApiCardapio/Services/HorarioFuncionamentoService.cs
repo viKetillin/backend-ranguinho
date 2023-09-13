@@ -4,6 +4,7 @@ using ApiCardapio.Interfaces.Repositories;
 using ApiCardapio.Interfaces.Services;
 using ApiCardapio.Querys;
 using ApiCardapio.Repositories;
+using ApiCardapio.Utilities;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,7 +24,8 @@ namespace ApiCardapio.Services
         #region [GET]
         public async Task<ResultadoExecucaoListaQuery<DiaHorarioFuncionamentoQuery>> GetHorarioFuncionamento(int idEstabelecimento)
         {
-            bool verificarSeExisteEstabelecimento = VerificarSeExisteEstabelecimento(idEstabelecimento);
+            var utilities = new Utility(_context);
+            bool verificarSeExisteEstabelecimento = utilities.VerificarSeExisteEstabelecimento(idEstabelecimento);
             if (!verificarSeExisteEstabelecimento)
             {
                 return new ResultadoExecucaoListaQuery<DiaHorarioFuncionamentoQuery>
@@ -54,9 +56,7 @@ namespace ApiCardapio.Services
         }
         #endregion [DELETE]
 
-        #region [Privados]        
-        private bool VerificarSeExisteEstabelecimento(int idEstabelecimento) => _context.Estabelecimentos.Any(e => e.Id == idEstabelecimento);
-        
+        #region [Privados]                
         private bool VerificarSeExisteHorarioFuncionamento(int id) => _context.DiasHorasFuncionamento.Any(e => e.Id == id);        
         #endregion [Privados]
     }

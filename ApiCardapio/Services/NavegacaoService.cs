@@ -4,9 +4,9 @@ using ApiCardapio.Interfaces.Repositories;
 using ApiCardapio.Interfaces.Services;
 using ApiCardapio.Models;
 using ApiCardapio.Querys;
+using ApiCardapio.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ApiCardapio.Services
@@ -106,7 +106,8 @@ namespace ApiCardapio.Services
 
         public async Task<ResultadoExecucaoListaQuery<CardapioQuery>> GetCardapio(int idEstabelecimento)
         {
-            bool verificarSeExisteEstabelecimento = VerificarSeExisteEstabelecimento(idEstabelecimento);
+            var utilities = new Utility(_context);
+            bool verificarSeExisteEstabelecimento = utilities.VerificarSeExisteEstabelecimento(idEstabelecimento);
             if (!verificarSeExisteEstabelecimento)
             {
                 return new ResultadoExecucaoListaQuery<CardapioQuery>
@@ -142,7 +143,9 @@ namespace ApiCardapio.Services
 
         public async Task<ResultadoExecucaoListaQuery<DiaHorarioFuncionamentoQuery>> GetHorarioFuncionamento(int idEstabelecimento)
         {
-            bool verificarSeExisteEstabelecimento = VerificarSeExisteEstabelecimento(idEstabelecimento);
+            var utilities = new Utility(_context);
+
+            bool verificarSeExisteEstabelecimento = utilities.VerificarSeExisteEstabelecimento(idEstabelecimento);
             if (!verificarSeExisteEstabelecimento)
             {
                 return new ResultadoExecucaoListaQuery<DiaHorarioFuncionamentoQuery>
@@ -156,8 +159,7 @@ namespace ApiCardapio.Services
         }
         #endregion [GET]
 
-        #region [Privados]
-        private bool VerificarSeExisteEstabelecimento(int idEstabelecimento) => _context.Estabelecimentos.Any(e => e.Id == idEstabelecimento);
+        #region [Privados]       
         private bool VerificarStatusEstabelecimento(List<DiaHorasFuncionamentoModel> horariosFuncionamento)
         {
             TimeSpan saoPauloOffset = TimeSpan.FromHours(-3);

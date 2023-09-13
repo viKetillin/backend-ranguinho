@@ -1,5 +1,4 @@
-﻿using ApiCardapio.Data;
-using ApiCardapio.Interfaces.Services;
+﻿using ApiCardapio.Interfaces.Services;
 using ApiCardapio.Models;
 using ApiCardapio.Querys;
 using Microsoft.AspNetCore.Authorization;
@@ -13,13 +12,11 @@ namespace ApiCardapio.Controllers.Admin
     [ApiController]
     public class AdicionalController : MainController
     {
-        private readonly IAdicionalService _adicionalService;
-        private readonly Contexto _context;
+        private readonly IAdicionalService _adicionalService;        
 
-        public AdicionalController(Contexto context, IAdicionalService adicionalService)
+        public AdicionalController(IAdicionalService adicionalService)
         {
-            _adicionalService = adicionalService;
-            _context = context;
+            _adicionalService = adicionalService;            
         }
 
         #region [GET]

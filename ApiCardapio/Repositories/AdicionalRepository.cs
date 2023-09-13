@@ -11,13 +11,11 @@ namespace ApiCardapio.Repositories
 {
     public class AdicionalRepository : AbstractRepository, IAdicionalRepository
     {
-        private readonly Contexto _context;
-        private readonly IDbContext _dbContext;
+        private readonly Contexto _context;        
 
         public AdicionalRepository(IDbContext dbContext, Contexto context) : base(dbContext)
         {
-            _context = context;
-            _dbContext = dbContext;
+            _context = context;            
         }
 
         #region [GET]

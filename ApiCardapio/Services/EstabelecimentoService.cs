@@ -4,6 +4,7 @@ using ApiCardapio.Interfaces.Repositories;
 using ApiCardapio.Interfaces.Services;
 using ApiCardapio.Models;
 using ApiCardapio.Querys;
+using ApiCardapio.Utilities;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -51,7 +52,9 @@ namespace ApiCardapio.Services
         #region [PUT]
         public async Task<ResultadoExecucaoQuery<int>> PutEstabelecimento(EstabelecimentoCommand estabelecimentoCommand)
         {
-            bool verificarSeExisteEstabelecimento = VerificarSeExisteEstabelecimento(estabelecimentoCommand.Id);
+            var utilities = new Utility(_context);
+
+            bool verificarSeExisteEstabelecimento = utilities.VerificarSeExisteEstabelecimento(estabelecimentoCommand.Id);
             if (!verificarSeExisteEstabelecimento)
             {
                 return new ResultadoExecucaoQuery<int>
@@ -68,7 +71,9 @@ namespace ApiCardapio.Services
         #region [DELETE]
         public async Task<ResultadoExecucaoQuery<int>> DeleteEstabelecimento(int id)
         {
-            bool verificarSeExisteEstabelecimento = VerificarSeExisteEstabelecimento(id);
+            var utilities = new Utility(_context);
+
+            bool verificarSeExisteEstabelecimento = utilities.VerificarSeExisteEstabelecimento(id);
             if (!verificarSeExisteEstabelecimento)
             {
                 return new ResultadoExecucaoQuery<int>
@@ -82,8 +87,7 @@ namespace ApiCardapio.Services
         }
         #endregion [DELETE]
 
-        #region [Privados]       
-        private bool VerificarSeExisteEstabelecimento(int idEstabelecimento) => _context.Estabelecimentos.Any(e => e.Id == idEstabelecimento);
+        #region [Privados]               
         private bool VerificarSeExisteLinkCadastrado(string link) => _context.Estabelecimentos.Any(e => e.LinkCardapio == link);
         #endregion [Privados]
     }

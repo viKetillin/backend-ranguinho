@@ -15,14 +15,12 @@ using BC = BCrypt.Net.BCrypt;
 namespace ApiCardapio.Repositories
 {
     public class UsuarioRepository : AbstractRepository, IUsuarioRepository
-    {
-        private readonly IDbContext _dbContext;
+    {    
         private readonly Contexto _context;
 
         public UsuarioRepository(IDbContext dbContext, Contexto context) : base(dbContext)
         {
             _context = context;
-            _dbContext = dbContext;
         }
 
         public async Task<PerfilUsuarioModel> RecuperarUsuarioLogin(string username, string senha)

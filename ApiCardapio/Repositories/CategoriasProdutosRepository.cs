@@ -4,7 +4,6 @@ using ApiCardapio.Enumerators;
 using ApiCardapio.Interfaces.Repositories;
 using ApiCardapio.Models;
 using ApiCardapio.Querys;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;

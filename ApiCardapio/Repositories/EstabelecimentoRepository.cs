@@ -116,7 +116,8 @@ namespace ApiCardapio.Repositories
                 ImagemCapa = estabelecimentoCommand.ImagemCapa
             };
 
-            _context.Estabelecimentos.Add(estabelecimento);            
+            _context.Estabelecimentos.Add(estabelecimento);
+            _context.SaveChanges();
 
             if (usuario.Perfil == "Proprietário")
             {

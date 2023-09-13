@@ -4,6 +4,7 @@ using ApiCardapio.Interfaces.Repositories;
 using ApiCardapio.Interfaces.Services;
 using ApiCardapio.Models;
 using ApiCardapio.Querys;
+using ApiCardapio.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,8 +41,8 @@ namespace ApiCardapio.Services
                     Mensagem = "Usuário não autorizado!"
                 };
             }
-
-            bool verificarSeExisteEstabelecimento = VerificarSeExisteEstabelecimento(idEstabelecimento);
+            var utilities = new Utility(_context); 
+            bool verificarSeExisteEstabelecimento = utilities.VerificarSeExisteEstabelecimento(idEstabelecimento);
             if (!verificarSeExisteEstabelecimento)
             {
                 return new ResultadoExecucaoListaQuery<CardapioQuery>
@@ -78,7 +79,8 @@ namespace ApiCardapio.Services
 
         public async Task<ResultadoExecucaoQuery<ProdutoQuery>> GetProduto(int idEstabelecimento, int idProduto)
         {
-            bool verificarSeExisteEstabelecimento = VerificarSeExisteEstabelecimento(idEstabelecimento);
+            var utilities = new Utility(_context);
+            bool verificarSeExisteEstabelecimento = utilities.VerificarSeExisteEstabelecimento(idEstabelecimento);
             if (!verificarSeExisteEstabelecimento)
             {
                 return new ResultadoExecucaoQuery<ProdutoQuery>
@@ -131,7 +133,6 @@ namespace ApiCardapio.Services
         #endregion [PUT]
 
         #region [Privados]        
-        private bool VerificarSeExisteEstabelecimento(int idEstabelecimento) => _context.Estabelecimentos.Any(e => e.Id == idEstabelecimento);
 
         private bool VerificarSePerfilUsuarioTemPermissao(int idEstabelecimento, UserFromTokenQuery usuario)
         {

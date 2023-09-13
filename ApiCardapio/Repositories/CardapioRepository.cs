@@ -70,7 +70,6 @@ namespace ApiCardapio.Repositories
 
             return await Task.FromResult(new ResultadoExecucaoQuery<ProdutoQuery>(resultado));
         }
-
         #endregion [GET]
 
         #region [POST]
@@ -97,20 +96,10 @@ namespace ApiCardapio.Repositories
                 ValorPromocional = produtoCommand.ValorPromocional
             };
 
-            _context.ProdutoEstabelecimentos.Add(produtoEstabelecimento);
-            _context.SaveChanges();
+            _context.ProdutoEstabelecimentos.Add(produtoEstabelecimento);            
 
             foreach (var ingrediente in produtoCommand.Ingredientes)
-            {
-                AdicionalModel estabelecimentoIngredienteCategoriaModel = new()
-                {
-                    IngredienteId = ingrediente.Id,
-                    CategoriaAdicionalId = produtoCommand.CategoriaId
-                };
-
-                _context.Adicionais.Add(estabelecimentoIngredienteCategoriaModel);
-                _context.SaveChanges();
-
+            {          
                 ProdutoIngredienteModel produtoIngredienteModel = new()
                 {
                     IngredienteId = ingrediente.Id,
@@ -118,9 +107,9 @@ namespace ApiCardapio.Repositories
                     Quantidade = ingrediente.Quantidade,
                 };
 
-                _context.ProdutoIngredientes.Add(produtoIngredienteModel);
-                _context.SaveChanges();
+                _context.ProdutoIngredientes.Add(produtoIngredienteModel);                
             };
+            _context.SaveChanges();
 
             return await Task.FromResult(new ResultadoExecucaoQuery<int>
             {
@@ -156,8 +145,7 @@ namespace ApiCardapio.Repositories
             };
 
             _context.ProdutoEstabelecimentos.Update(produtoEstabelecimento);
-            _context.ProdutoIngredientes.RemoveRange(_context.ProdutoIngredientes.Where(x => x.ProdutoId == produtoCommand.Id));
-            _context.SaveChanges();
+            _context.ProdutoIngredientes.RemoveRange(_context.ProdutoIngredientes.Where(x => x.ProdutoId == produtoCommand.Id));            
 
             foreach (var ingrediente in produtoCommand.Ingredientes)
             {
@@ -168,9 +156,10 @@ namespace ApiCardapio.Repositories
                     Quantidade = ingrediente.Quantidade,
                 };
 
-                _context.ProdutoIngredientes.Add(produtoIngredienteModel);
-                _context.SaveChanges();
+                _context.ProdutoIngredientes.Add(produtoIngredienteModel);                
             };
+
+            _context.SaveChanges();
 
             return await Task.FromResult(new ResultadoExecucaoQuery<int>
             {
